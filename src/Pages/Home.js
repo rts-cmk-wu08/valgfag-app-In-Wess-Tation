@@ -8,7 +8,7 @@ import mapboxgl from "mapbox-gl";
 mapboxgl.workerClass = require("worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker").default;
 
 
-const MyMap = () => {
+const Home = () => {
     return ( 
         <Map 
             mapLib={import('mapbox-gl')}
@@ -35,4 +35,4 @@ const MyMap = () => {
      );
 }
  
-export default MyMap;
+export default Home;
