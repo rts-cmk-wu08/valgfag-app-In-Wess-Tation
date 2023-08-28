@@ -1,10 +1,24 @@
 /* eslint import/no-webpack-loader-syntax: off */
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Map, NavigationControl, Marker, GeolocateControl } from "react-map-gl";
 import mapboxgl from "mapbox-gl";
 
 mapboxgl.workerClass = require("worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker").default;
+
+const calculateDistance = (lat1, lon1, lat2, lon2) => {
+  const R = 6371; // Earth's radius in km
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+    Math.cos((lat2 * Math.PI) / 180) *
+    Math.sin(dLon / 2) *
+    Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distance = R * c; // Distance in km
+  return distance;
+};
 
 const Game = () => {
   const [userLocation, setUserLocation] = useState(null);
@@ -14,11 +28,15 @@ const Game = () => {
     // Add more markers as needed
   ];
 
-  const proximityThreshold = 0.01; // Adjust as needed (degrees)
+  const proximityThreshold = 0.01; // Adjust as needed (kilometers)
 
   const onUserLocationChange = event => {
     setUserLocation([event.coords.longitude, event.coords.latitude]);
   };
+
+  useEffect(() => {
+    // Perform any updates based on user location change
+  }, [userLocation]);
 
   return (
     <Map
@@ -41,9 +59,11 @@ const Game = () => {
 
       {markers.map((marker, index) => {
         const distance = userLocation
-          ? mapboxgl.MercatorCoordinate.distanceTo(
-              new mapboxgl.MercatorCoordinate(userLocation[0], userLocation[1]),
-              new mapboxgl.MercatorCoordinate(marker.longitude, marker.latitude)
+          ? calculateDistance(
+              userLocation[1],
+              userLocation[0],
+              marker.latitude,
+              marker.longitude
             )
           : null;
 
@@ -53,7 +73,7 @@ const Game = () => {
             latitude={marker.latitude}
             longitude={marker.longitude}
             style={{
-              color: distance && distance < proximityThreshold ? "red" : "hotpink",
+              color: distance && distance < proximityThreshold ? "red" : "hotpink"
             }}
           />
         );
