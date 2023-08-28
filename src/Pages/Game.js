@@ -1,6 +1,6 @@
 /* eslint import/no-webpack-loader-syntax: off */
 import { useState, useEffect } from "react";
-import { Map, NavigationControl, Marker, GeolocateControl } from "react-map-gl";
+import { Map, NavigationControl, Marker, GeolocateControl, Popup } from "react-map-gl";
 import mapboxgl from "mapbox-gl";
 
 mapboxgl.workerClass = require("worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker").default;
@@ -21,7 +21,10 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
 };
 
 const Game = () => {
-  const [userLocation, setUserLocation] = useState(null);
+
+    const [userLocation, setUserLocation] = useState(null);
+    const [nearbyMarkers, setNearbyMarkers] = useState([]);
+
   const markers = [
     { latitude: 55.62572166993465, longitude: 12.086321486975416 },
     { latitude: 55.625783079691665, longitude: 12.086372512659276 },
@@ -35,13 +38,24 @@ const Game = () => {
   };
 
   useEffect(() => {
-    // Perform any updates based on user location change
+    if (userLocation) {
+      const nearby = markers.filter(marker => {
+        const distance = calculateDistance(
+          userLocation[1],
+          userLocation[0],
+          marker.latitude,
+          marker.longitude
+        );
+        return distance < proximityThreshold;
+      });
+      setNearbyMarkers(nearby);
+    }
   }, [userLocation]);
 
   return (
     <Map
-      mapboxAccessToken={process.env.REACT_APP_MAPBOX}
-      style={{ width: "85vw", height: "50vh" }}
+    mapboxAccessToken={process.env.REACT_APP_MAPBOX}
+    style={{ width: "85vw", height: "50vh" }}
       mapStyle="mapbox://styles/mapbox/streets-v9"
       initialViewState={{
         latitude: 55.62572166993462,
@@ -73,12 +87,31 @@ const Game = () => {
             latitude={marker.latitude}
             longitude={marker.longitude}
             style={{
-              color: distance && distance < proximityThreshold ? "red" : "hotpink"
-            }}
-          />
+                background: "hotpink",
+                padding: "0.5rem",
+                borderRadius: "1rem"
+              }}
+          >
+            <div
+              style={{
+                color: distance && distance < proximityThreshold ? "red" : "hotpink"
+              }}
+            >
+              {/* Clicking on this marker will show a popup */}
+              <Popup
+                latitude={marker.latitude}
+                longitude={marker.longitude}
+                closeButton={true}
+                closeOnClick={false}
+                onClose={() => {}} // You can add functionality here if needed
+                anchor="top"
+              >
+                <div>This is a marker</div>
+              </Popup>
+            </div>
+          </Marker>
         );
       })}
-
       <GeolocateControl
         trackUserLocation={true}
         positionOptions={{ enableHighAccuracy: true }}
@@ -86,6 +119,20 @@ const Game = () => {
         auto
         onGeolocate={onUserLocationChange}
       />
+
+        {nearbyMarkers.map((marker, index) => (
+            <Popup
+            key={index}
+            latitude={marker.latitude}
+            longitude={marker.longitude}
+            closeButton={true}
+            closeOnClick={false}
+            anchor="top"
+            >
+            <div>You are near this marker!</div>
+            </Popup>
+        ))}
+
     </Map>
   );
 };
