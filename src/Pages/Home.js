@@ -5,6 +5,7 @@ import mapboxgl from "mapbox-gl";
 
 
 
+
 mapboxgl.workerClass = require("worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker").default;
 
 
@@ -21,15 +22,14 @@ const Home = () => {
             style={{width: "85vw", height: "50vh"}}
             mapStyle="mapbox://styles/mapbox/streets-v9"
             initialViewState={{
-               latitude: 55.7060378,
-               longitude: 12.5142235,
+               latitude: 55.62572166993462,
+               longitude: 12.086321486975416,
                zoom: 16
             }}
-            popup
         >
          <NavigationControl />  
 
-         <Marker latitude={55.62572166993462} longitude={12.086321486975416} color="hotpink" />
+         <Marker latitude={55.62572166993462} longitude={12.086321486975416} color="hotpink" popup={popup}/>
         <GeolocateControl 
             trackUserLocation={true}
             positionOptions={{ enableHighAcuracy: true }}
