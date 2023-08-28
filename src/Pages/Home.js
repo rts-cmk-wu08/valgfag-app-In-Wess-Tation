@@ -11,10 +11,6 @@ mapboxgl.workerClass = require("worker-loader!mapbox-gl/dist/mapbox-gl-csp-worke
 
 const Home = () => {
 
-    const popup = new mapboxgl.Popup({ offset: 25 }).setText(
-        'You have reached to marker! Here is 10 points'
-        );
-
     return ( 
         <Map 
             mapLib={import('mapbox-gl')}
@@ -29,13 +25,14 @@ const Home = () => {
         >
          <NavigationControl />  
 
-         <Marker latitude={55.62572166993462} longitude={12.086321486975416} color="hotpink" popup={popup}/>
+         <Marker latitude={55.62572166993462} longitude={12.086321486975416} color="hotpink"/>
         <GeolocateControl 
             trackUserLocation={true}
             positionOptions={{ enableHighAcuracy: true }}
             showAcuracyCircle={true}
             auto
         />
+        
 
         </Map>
      );
