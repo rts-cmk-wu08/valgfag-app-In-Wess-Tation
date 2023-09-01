@@ -11,3 +11,7 @@ Hvad er den vigtigste funktionalitet i din applikation?
  
 Hvilke andre funktionaliteter kunne du forestille dig, at applikationen kunne have (hvis du havde masser af tid)?  
 - At man kunne se fremtidige temperature og vejrusigter + at baggrunden ændrede sig fra klar himmel hvis vejret var klar himmel, til uvejr hvis vejret ville regne 
+
+
+Link til min PWA: 
+https://weslyns-react-app.netlify.app/
